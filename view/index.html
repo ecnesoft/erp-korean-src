@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+  
+  <title>ERP</title>
+
+  <style>
+    input, textarea
+    {
+      margin-top: 7px;
+    }
+  </style>
+
+</head>
+<body>
+  
+  <header>
+    <h1>ERP - Korean Issue</h1>
+  </header>
+
+  <main>
+    <input id="cust_support_id" type="number" placeholder="Customer support ID" />
+    <button id="searchButton">search</button>
+    <br />
+    <select id="sysUsers"></select>
+    <input id="symptom" type="text" placeholder="Symptom" />
+    <br />
+    <textarea id="customer_request" placeholder="Customer Request" rows="10" cols="50"></textarea>
+    <br />
+    <button id="submit">submit</button>
+  </main>
+
+  <script>
+    
+    document.addEventListener('DOMContentLoaded', function () {
+      var ipcRenderer = require('electron').ipcRenderer;
+      ipcRenderer.send('username');
+      ipcRenderer.on('pong', (event, data) => {
+        console.log(data);
+      });
+      ipcRenderer.on('username', (event, data) => {
+        console.log(data);
+        const select = document.querySelector('#sysUsers');
+        for (var i = 0; i < data.length; i++) {
+          const option = document.createElement('option');
+          option.setAttribute('data-group', 'sys_user_group');
+          option.value = data[i];
+          option.innerHTML = data[i];
+          select.appendChild(option);
+        }
+      });
+      ipcRenderer.on('onload', (event, data) => {
+        console.log(data);
+        const options = document.querySelectorAll('option[data-group="sys_user_group"]');
+        console.log(options);
+        for (var i = 0; i < options.length; i++) {
+          const optionVal = options[i].value;
+          console.log(optionVal);
+          if (optionVal === data[0].assignedTo) {
+            options[i].selected = true;
+          }
+        }
+        document.querySelector('#symptom').value = data[0].symptom;
+        document.querySelector('#customer_request').value = data[0].cust_request;
+      });
+      ipcRenderer.on('update', (event, data) => {
+        console.log(data);
+      });
+      document.querySelector('#searchButton').addEventListener('click', function () {
+        ipcRenderer.send('onload', parseInt(document.querySelector('#cust_support_id').value));
+      });
+      document.querySelector('#submit').addEventListener('click', function () {
+        const data = {
+          assignedTo: document.querySelector("#sysUsers").value,
+          symptom: document.querySelector('#symptom').value,
+          cust_request: document.querySelector('#customer_request').value,
+          cust_support_id: document.querySelector('#cust_support_id').value
+        };
+        console.log(data);
+        ipcRenderer.send('update', data);
+      });
+    });
+
+  </script>
+
+</body>
+</html>

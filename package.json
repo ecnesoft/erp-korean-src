@@ -1,0 +1,20 @@
+{
+  "name": "erp-korean",
+  "version": "0.0.0",
+  "description": "Korean input issue",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "pack-win32": "electron-packager . --platform=win32 --arch=ia32 --overwrite --no-prune",
+    "pack-current": "electron-packager . --overwrite --no-prune" 
+  },
+  "author": "Hyun Ho Oh",
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^4.0.6",
+    "electron-packager": "^13.1.0"
+  },
+  "dependencies": {
+    "mysql2": "^1.6.5"
+  }
+}
